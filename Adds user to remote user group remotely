@@ -1,0 +1,14 @@
+$csv = Import-CSV C:\Scripts\test_list.csv -Delimiter ","
+
+
+Foreach ($line in $csv)
+{
+
+$group = 'Remote Desktop Users'
+$user = $line.uname
+$pc = $line.pcname
+
+$objUser = [ADSI]("WinNT://companyname/$user")
+$objGroup = [ADSI]("WinNT://$pc/$group")
+$objGroup.PSBase.Invoke("Add",$objUser.PSBase.Path)
+}
