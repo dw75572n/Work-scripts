@@ -1,0 +1,44 @@
+
+$fname = Read-Host "Enter the first name of the user"
+$uname = Read-Host "Enter the username of the user"
+$tuname = Read-Host "Enter your Username"
+$tfname = Read-Host "Enter your first name"
+
+
+
+Send-MailMessage -From NO_REPLY@helpdesk.com -Subject "Welcome to eMarketer, $fname!" -To $uname@domain.com -Attachments "attachmentpath","attachmentpath","attachmentpath" -Body "Hi $fname,
+
+This is $tfname from the IT department. I am writing today to collect the following information from you. 
+
+
+Please Email me at $tuname@domain.com with the information requested. Please do NOT reply to this email.
+
+
+
+
+
+
+
+
+" -SmtpServer servername
+
+Send-MailMessage -From NO_REPLY@helpdesk.com -Subject "Total Access Account Setup -- Important" -To $uname@domain.com -Body 
+
+email message
+
+" -SmtpServer servername
+
+
+Send-MailMessage -From NO_REPLY@helpdesk.com -Subject "subject" -To $uname@domain.com -Attachments "attachment location" -Body "Hi $fname,
+
+email message
+
+
+" -SmtpServer servername 
+
+Send-MailMessage -From NO_REPLY@helpdesk.com -Subject "email subject" -To $uname@domain.com -Attachments "attachmentpath" -Body "Hi $fname,
+
+email contents
+
+
+" -SmtpServer servername
