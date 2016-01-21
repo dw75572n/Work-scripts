@@ -1,0 +1,63 @@
+
+Import-Module ServerManager
+
+####Adds server roles################################################
+
+$servertype = Read-Host "Enter the number for the type of server you wish to setup (1) App, (2) Web, (3) Both"
+
+switch ($servertype)
+{
+   
+       1 { @( Add-WindowsFeature -WhatIf Web-server, web-webserver, web-common-http, 
+         web-static-content, web-default-doc, web-dir-browsing, web-http-errors, 
+         web-http-redirect, web-app-dev, web-asp-net, web-net-ext, web-asp, web-cgi, 
+         web-ISAPI-ext, web-ISAPI-filter, web-includes, web-health, web-http-logging, web-log-libraries,
+         web-request-monitor, web-http-tracing, web-custom-logging, web-odbc-logging, 
+         web-security, web-basic-auth, web-windows-auth, web-digest-auth, web-client-auth,
+         web-cert-auth, web-url-auth, web-filtering, web-ip-security, web-performance, web-stat-compression,
+         web-dyn-compression, web-mgmt-tools, web-mgmt-console, web-scripting-tools, web-mgmt-service, MSMQ, 
+         MSMQ-Services, MSMQ-server, net-framework, net-framework-core, net-win-cfac, NET-HTTP-Activation,   
+         NET-Non-HTTP-Activ, WAS, WAS-Process-Model, WAS-NET-Environment, WAS-Config-APIs ) }
+       
+       2 { @(Add-WindowsFeature -whatif application-server,AS-Web-Support,AS-Ent-Services, AS-TCP-Port-Sharing, 
+         AS-WAS-Support, AS-HTTP-Activation, AS-MSMQ-Activation, AS-TCP-Activation,  AS-Named-Pipes, 
+         AS-Dist-Transaction, AS-Incoming-Trans, AS-Outgoing-Trans ) }
+       
+       3 { @( Add-WindowsFeature -WhatIf Web-server, web-webserver, web-common-http, 
+         web-static-content, web-default-doc, web-dir-browsing, web-http-errors, 
+         web-http-redirect, web-app-dev, web-asp-net, web-net-ext, web-asp, web-cgi, 
+         web-ISAPI-ext, web-ISAPI-filter, web-includes, web-health, web-http-logging, web-log-libraries,
+         web-request-monitor, web-http-tracing, web-custom-logging, web-odbc-logging, 
+         web-security, web-basic-auth, web-windows-auth, web-digest-auth, web-client-auth,
+         web-cert-auth, web-url-auth, web-filtering, web-ip-security, web-performance, web-stat-compression,
+         web-dyn-compression, web-mgmt-tools, web-mgmt-console, web-scripting-tools, web-mgmt-service, MSMQ, 
+         MSMQ-Services, MSMQ-server, net-framework-core, NET-HTTP-Activation,   
+         NET-Non-HTTP-Activ, WAS, WAS-Process-Model, WAS-NET-Environment, WAS-Config-APIs, application-server,
+         AS-NET-Framework,AS-Web-Support,AS-Ent-Services, AS-TCP-Port-Sharing, 
+         AS-WAS-Support, AS-HTTP-Activation, AS-MSMQ-Activation, AS-TCP-Activation,  AS-Named-Pipes, 
+         AS-Dist-Transaction, AS-Incoming-Trans, AS-Outgoing-Trans)}
+
+       Default {"The Server type could not be determined"}
+
+       }
+
+ ##########Creates Private Queues and assigns permissions#######################################                           
+                               
+[System.Reflection.Assembly]::LoadWithPartialName("System.Messaging") | Out-Null
+
+Write-Host "Creating the new queue and setting FullControl permissions for queuename"
+$qb = [System.Messaging.MessageQueue]::Create(".\private$\queuename")
+
+$qb.SetPermissions("everyone", 
+      [System.Messaging.MessageQueueAccessRights]::FullControl,            
+      [System.Messaging.AccessControlEntryType]::Set)   
+
+
+  Write-Host "Creating the new queue and assigning permissions to queuename"
+      
+ $q1 = [System.Messaging.MessageQueue]::Create(".\private$\queuename")
+
+ $q1.SetPermissions("everyone", 
+      [System.Messaging.MessageQueueAccessRights]::FullControl,            
+      [System.Messaging.AccessControlEntryType]::Set) 
+   
