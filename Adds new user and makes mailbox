@@ -1,0 +1,73 @@
+import-module activedirectory
+
+
+########Get user Input########
+
+$Fname = Read-Host "What is the users first name?"
+$Lname = Read-Host "What is the users last name?"
+$Userinput = Read-host "What is the username?" 
+$utitle = Read-Host "What is the title of the new employee?"
+$udept = Read-Host "What is the Employee's department?"
+$uname = $Userinput
+$FLname = "$fname $lname"
+
+###############Add user to AD and create mailbox#################
+
+New-ADUser -Name "$FLname" -SamAccountName $uname -AccountPassword (ConvertTo-SecureString "Password!123" -AsPlainText -Force) -DisplayName $FLname -Title $utitle -Department $udept -Description $utitle -Office "company street address" -Company "company name" -GivenName $Fname -Surname $Lname -Path "AD path" -Enabled $true -PassThru -PasswordNeverExpires $false -EmailAddress "$uname@domain"
+SET-ADUSER $uname –HomeDrive "I" –HomeDirectory "networkdrivepath"
+Set-Location "networkdrivepath"
+mkdir $uname
+
+Import-Module Microsoft.PowerShell.Security
+
+
+$destination = "\\nycefs\home\$uname"
+$Acl = Get-Acl $destination
+$Ar = New-Object system.security.accesscontrol.filesystemaccessrule("$uname","FullControl","ContainerInherit, ObjectInherit", "None", "Allow")
+$Acl.SetAccessRule($Ar)
+Set-Acl $destination $Acl
+
+
+#add-pssnapin Microsoft.Exchange.Management.PowerShell.E2010 -erroraction SilentlyContinue
+#Enable-Mailbox -identity $uname  -Database databasename
+
+##############Add user to default groups#############
+
+Add-ADGroupMember -Identity "AD group name" -Members $uname
+Add-ADGroupMember -Identity "AD group name" -Members $uname  
+
+######Add user to department specific groups############
+
+
+$dnum = Read-Host "Enter the department number to add the user to the correct groups (1) Sales, (2) Content, (3) Accounting, (4) IT , (5) Developer, (6) Marketing, (7) CRM Operations, (8) Research"
+
+switch ($dnum)
+            {
+            1 {Add-ADGroupMember -Identity "Sales Team" -Members $uname}
+            2 {Add-ADGroupMember -Identity "Content Team" -Members $uname}
+            3 {Add-ADGroupMember -Identity "Accounts Team" -Members $uname}
+            4 {Add-ADGroupMember -Identity "Information_Technology" -Members $uname}
+            5 {Add-ADGroupMember -Identity "Development" -Members $uname}
+            6 {Add-ADGroupMember -Identity "Marketing" -Members $uname}
+            7 {Add-ADGroupMember -Identity "CRM_Operations_Group" -Members $uname}
+            8 {Add-ADGroupMember -Identity "Researchers" -Members $uname}
+            default {"the group was not found"}
+            }
+
+
+Write-Host "The user has been successfully added!"
+
+
+######################add other groups#####################
+
+
+do {
+    $group2 = Read-Host "Do you want to continue adding groups? yes or no?"
+    if($group2 -ne "no") {
+        $group = Read-Host "Please enter the additional department specific groups"
+        Add-ADGroupMember -Identity "$group" -Members $uname
+    }
+} 
+
+until($group2 -eq "no")
+
