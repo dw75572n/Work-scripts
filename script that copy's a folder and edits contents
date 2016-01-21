@@ -1,0 +1,50 @@
+$SourceFile = Read-Host "Please enter the path of the folder"
+$DestinationFile = $SourceFile
+
+If (Test-Path $DestinationFile) {
+    $i = 0
+    While (Test-Path $DestinationFile) {
+        $i += 1
+        $DestinationFile = ($sourceFile + $i)
+    }
+} Else {
+    New-Item -ItemType directory -Path $DestinationFile -Force
+}
+
+Copy-Item -Path $SourceFile -Destination $DestinationFile -Recurse -Verbose
+
+
+$cname = Read-Host "Please enter folder to remove"
+
+Get-ChildItem -Path ($DestinationFile + "\Databases\AtlasCore") -Exclude "foldertoexclude","$cname" | foreach ($_) {
+       "CLEANING :" + $_.fullname
+       Remove-Item $_.fullname -Force -Recurse
+       "CLEANED... :" + $_.fullname
+}
+
+Get-ChildItem -Path ($DestinationFile + "\Databases\HTFSExtracts") -Exclude "foldertoexclude","$cname" | foreach ($_) {
+       "CLEANING :" + $_.fullname
+       Remove-Item $_.fullname -Force -Recurse
+       "CLEANED... :" + $_.fullname
+}
+
+Get-ChildItem -Path ($DestinationFile + "\Databases\HTFSJob") -Exclude "foldertoexclude","$cname" | foreach ($_) {
+       "CLEANING :" + $_.fullname
+       Remove-Item $_.fullname -Force -Recurse
+       "CLEANED... :" + $_.fullname
+}
+
+Get-ChildItem -Path ($DestinationFile + "\Databases\HTFSAuth") -Exclude "foldertoexclude","$cname" | foreach ($_) {
+       "CLEANING :" + $_.fullname
+       Remove-Item $_.fullname -Force -Recurse
+       "CLEANED... :" + $_.fullname
+}
+
+Get-ChildItem -Path $DestinationFile -include "folder to remove","folder to remove" -Directory -Recurse | foreach ($_) {
+       "CLEANING :" + $_.fullname
+       Remove-Item $_.fullname -Force -Recurse
+       "CLEANED... :" + $_.fullname
+}
+
+
+Rename-Item -Path $DestinationFile -NewName ($DestinationFile -replace "edit foldername","$cname") -Force
