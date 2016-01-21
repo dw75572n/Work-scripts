@@ -1,0 +1,83 @@
+######Makes a copy of current atlas and hazeltree folders appends a +1 for each addtional copy
+
+$SourceFile = "folderpath"
+$DestinationFile = $SourceFile
+
+If (Test-Path $DestinationFile) {
+    $i = 0
+    While (Test-Path $DestinationFile) {
+        $i += 1
+        $DestinationFile = ($sourceFile + $i)
+    }
+} Else {
+    New-Item -ItemType directory -Path $DestinationFile -Force
+}
+
+Copy-Item -Path $SourceFile -Destination $DestinationFile -Recurse -Verbose
+
+$SourceFile = "folderpath"
+$DestinationFile = $SourceFile
+
+If (Test-Path $DestinationFile) {
+    $i = 0
+    While (Test-Path $DestinationFile) {
+        $i += 1
+        $DestinationFile = ($sourceFile + $i)
+    }
+} Else {
+    New-Item -ItemType directory -Path $DestinationFile -Force
+}
+
+Copy-Item -Path $SourceFile -Destination $DestinationFile -Recurse -Verbose 
+
+
+##################Copy Atlas and HazelTree Folders and append a 1
+
+$atlascopyorg = Read-Host "pathoffoldertocopy"
+
+$atlascopydest = "pathofwherethefolderiscopiedto"
+
+
+Copy-Item -Path $atlascopyorg -Destination $atlascopydest -Recurse -Verbose -Force
+
+
+Stop-Service #put service name here if a service needs to be stopped for folder copy 
+
+
+$hazelcopyorg = Read-Host "pathoffoldertocopy"
+
+$hazelcopydest = "pathofwherethefolderiscopiedto"
+
+
+Copy-Item -Path $hazelcopyorg -Destination $hazelcopydest -Recurse -Verbose -Force
+
+Start-Service service.name
+
+
+###################Runs Database Script and creates input for script, this part is proprietary and you only need it if you have a sql script you
+need to run from your own company
+
+Import-Module “sqlps” -DisableNameChecking #only works on windows server versions with updated powershell or 2012 and up
+
+$ppath = Read-Host "Please enter the package database folder path"
+
+
+
+$client = Read-Host "Enter Client name"
+$date = Get-Date -Format "yymmdd"
+$sqlsrvname = Read-Host "Please enter the sql server name"
+$deploytype = Read-Host "Is there a server instance? (1) Yes (2) No" 
+
+switch($deploytype){
+
+ 1 {$Instance = Read-Host "Please Enter instance name" 
+ cd -Path $ppath
+ .\sqlpatchremote.ps1 -DBServer $sqlsrvname –dbinstance $Instance –client $client –mainline HTFS –datefolder $date –targetenv $sqlsrvname} 
+
+ 2 {cd -Path $ppath
+ .\sqlpatchremote.ps1 –dbserver $sqlsrvname –client $client –mainline HTFS –datefolder $date –targetenv $sqlsrvname }
+
+ default {"Invalid Selection"}
+
+}
+
