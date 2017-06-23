@@ -1,0 +1,170 @@
+
+
+
+######Makes a copy of current atlas and hazeltree folders appends a +1 for each addtional copy
+
+
+
+function filecopy{
+
+$SourceFile = "C:\Websites\Atlas"
+$DestinationFile = $SourceFile
+
+If (Test-Path $DestinationFile) {
+    $i = 0
+    While (Test-Path $DestinationFile) {
+        $i += 1
+        $DestinationFile = ($sourceFile + $i)
+    }
+} Else {
+    New-Item -ItemType directory -Path $DestinationFile -Force
+}
+
+Copy-Item -Path $SourceFile -Destination $DestinationFile -Recurse -Verbose
+
+$SourceFile = "C:\Program Files\companyname"
+$DestinationFile = $SourceFile
+
+If (Test-Path $DestinationFile) {
+    $i = 0
+    While (Test-Path $DestinationFile) {
+        $i += 1
+        $DestinationFile = ($sourceFile + $i)
+    }
+} Else {
+    New-Item -ItemType directory -Path $DestinationFile -Force
+}
+
+Copy-Item -Path $SourceFile -Destination $DestinationFile -Recurse -Verbose 
+
+}
+
+function filechoice {
+
+$fileloc = Read-Host "Where are the Atlas and Hazeltree folders located? (1) for default location (2) for other"
+
+switch($fileloc){
+
+ 1 {filecopy}
+
+ 2 {$newloca = Read-Host "Please enter the new Atlas path"
+ 
+$newloca = $SourceFile 
+$DestinationFile = $SourceFile
+
+If (Test-Path $DestinationFile) {
+    $i = 0
+    While (Test-Path $DestinationFile) {
+        $i += 1
+        $DestinationFile = ($sourceFile + $i)
+    }
+} Else {
+    New-Item -ItemType directory -Path $DestinationFile -Force
+}
+
+Copy-Item -Path $SourceFile -Destination $DestinationFile -Recurse -Verbose
+
+$newlocht = Read-Host "Please enter the new HazelTree path"
+
+$newlocht = $SourceFile 
+$DestinationFile = $SourceFile
+
+If (Test-Path $DestinationFile) {
+    $i = 0
+    While (Test-Path $DestinationFile) {
+        $i += 1
+        $DestinationFile = ($sourceFile + $i)
+    }
+} Else {
+    New-Item -ItemType directory -Path $DestinationFile -Force
+}
+
+Copy-Item -Path $SourceFile -Destination $DestinationFile -Recurse -Verbose }
+}
+}
+
+##################Copy Atlas and HazelTree Folders
+
+Function foldercopy {
+
+$atlascopyorg = Read-Host "Enter Atlas folder location"
+
+$atlascopydest = "C:\Websites"
+
+
+Copy-Item -Path $atlascopyorg -Destination $atlascopydest -Recurse -Verbose -Force
+
+
+Stop-Service htfs.job.service 
+
+
+$hazelcopyorg = Read-Host "Enter HazelTree folder location"
+
+$hazelcopydest = "C:\Program Files"
+
+
+Copy-Item -Path $hazelcopyorg -Destination $hazelcopydest -Recurse -Verbose -Force
+
+Start-Service htfs.job.service
+}
+
+
+########################Asks if you want to copy the folders
+while ($true) {
+  $fcopy = Read-Host "Would you like to copy the Atlas and Hazeltree folders?"
+  if ($fcopy –eq "no") {
+    break
+  } else {
+    filechoice
+    foldercopy
+    break
+  }
+}
+
+
+$dbdeploy = Read-Host "Would you like to deploy to a single database or all? (1) for all (2) for single (3) for single without instance"
+
+switch($dbdeploy){
+
+ 1 {$sclient = Read-Host "Enter Client name"
+        $date = Get-Date -Format "yymmdd"
+        $sqlsrvname = Read-Host "Please enter the sql server name"
+        $deploytype = Read-Host "Is there a server instance? (1) Yes (2) No"
+
+        switch($deploytype){
+
+         1 {$Instance = Read-Host "Please Enter instance name" 
+         SQL-remote -DBServer $sqlsrvname –dbinstance $Instance –client $sclient –mainline HTFS –datefolder $date –targetenv $sqlsrvname} 
+
+         2 {SQL-remote –dbserver $sqlsrvname –client $client –mainline HTFS –datefolder $date –targetenv $sqlsrvname }
+ 
+         default {"Invalid Selection"}
+
+          }}
+ 2 {do {
+    $dabname = Read-Host "Enter the database name or (stop) to end"
+    if($dabname -ne "stop") {
+        $dbanameinst = Read-Host "Please enter the instance name"
+        $sclient = Read-Host "Enter Client name"
+        $date = Get-Date -Format "yymmdd"
+        $sqlsrvname = Read-Host "Please enter the sql server name"
+        SQL-remote -DBServer $sqlsrvname –dbinstance $Instance -DBNameList $dabname –client $sclient –mainline HTFS –datefolder $date –targetenv $sqlsrvname}
+    }until($group2 -eq "stop")}
+
+ 3 {do {
+    $dabname = Read-Host "Enter the database name or (stop) to end"
+    if($dabname -ne "stop") {
+    $sclient = Read-Host "Enter Client name"
+        $date = Get-Date -Format "yymmdd"
+        $sqlsrvname = Read-Host "Please enter the sql server name"
+        SQL-remote -DBServer $sqlsrvname -DBNameList $dabname –client $sclient –mainline HTFS –datefolder $date –targetenv $sqlsrvname}
+    }until($group2 -eq "stop")} 
+
+    default {"Invalid Selection"}
+
+}
+
+
+
+
+
